@@ -1,0 +1,9 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "olca_agent": "./src/olca_agent/olca_graph.py:olca_agent",
+    "olca_agent_dev": "./src/olca_agent/olca_graph.py:olca_agent_dev",
+    "olca_agent_prod": "./src/olca_agent/olca_graph.py:olca_agent_prod"
+  },
+  "env": ".env"
+}

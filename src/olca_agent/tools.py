@@ -410,6 +410,10 @@ def search_exchanges_for_process(
     then searches the database for matching flows with quantitative reference exchanges.
     Supports iterative refinement based on user feedback and approved exchanges.
     
+    **CRITICAL**: This tool can handle MULTIPLE materials in a single call. When users
+    request multiple materials (e.g., "0.05kg plastic and 0.2kg glass"), process them
+    ALL together in ONE tool call - do not split into separate calls.
+    
     When selected_exchanges is provided, the tool will add the selected exchanges directly
     to the process instead of returning search results.
     
@@ -417,6 +421,7 @@ def search_exchanges_for_process(
         process_id: ID of the process to add exchanges to
         material_description: Natural language description of materials/inputs 
                             (e.g., "0.5kg of hot rolled steel input and 1kwh of electricity")
+                            Supports multiple materials: "0.05kg plastic and 0.2kg glass"
         feedback: Optional user feedback for refining the search (e.g., "Change steel to 1kg, need European steel")
         approved_exchanges: List of exchanges already approved by user for context
         selected_exchanges: List of selected flows to add directly to the process (if provided, skips search)

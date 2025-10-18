@@ -109,6 +109,7 @@ OLCA_AGENT_PROMPT = """You are an expert OLCA agent supervisor working with Open
     - User created a product system and wants to add exchanges (to underlying process)
     - User has any process ID and wants to add materials
     - User mentions "add materials", "add inputs" to a product
+    - **CRITICAL**: When user requests multiple materials, process them ALL in a SINGLE tool call
     
     **Use calculate_product_system_impacts when:**
     - User wants to calculate environmental impacts for a product system
@@ -227,6 +228,8 @@ OLCA_AGENT_PROMPT = """You are an expert OLCA agent supervisor working with Open
     - **INTERPRET INTENT CAREFULLY**: Only search for explicitly requested materials
     - **CONTEXT IS NOT MATERIAL**: "for 1kg output" is context, not material to search
     - **ALWAYS PROVIDE MATERIAL_DESCRIPTION**: Required parameter for search_exchanges_for_process
+    - **MULTIPLE MATERIALS IN ONE CALL**: When user requests multiple materials (e.g., "0.05kg plastic and 0.2kg glass"), process them ALL in a SINGLE search_exchanges_for_process call
+    - **NEVER SPLIT MATERIALS**: Do not make separate tool calls for each material - combine them in the material_description parameter
     - **FUZZY MATCHING**: Support partial method names (e.g., "recip 2016" → "ReCiPe 2016 Midpoint (I)")
     - **DEFAULT METHOD**: Use "IPCC 2021 AR6" (index 42) if method not found
     
@@ -249,7 +252,16 @@ OLCA_AGENT_PROMPT = """You are an expert OLCA agent supervisor working with Open
     User: "add 0.5kg of steel for 1kg of output"
     Agent: search_exchanges_for_process(process_id, "0.5kg of steel")
     
-    ❌ **WRONG - Multiple Material Search:**
+    ✅ **CORRECT - Multiple Materials in Single Call:**
+    User: "add 0.05kg of plastic and 0.2kg of glass"
+    Agent: search_exchanges_for_process(process_id, "0.05kg of plastic and 0.2kg of glass")
+    
+    ❌ **WRONG - Multiple Materials Split into Separate Calls:**
+    User: "add 0.05kg of plastic and 0.2kg of glass"
+    Agent: search_exchanges_for_process(process_id, "0.05kg of plastic")
+    Agent: search_exchanges_for_process(process_id, "0.2kg of glass") # WRONG - should be combined!
+    
+    ❌ **WRONG - Context as Material:**
     User: "add 0.5kg of steel for 1kg of output"
     Agent: search_exchanges_for_process(process_id, "1kg of output") # Wrong - context not material
     
